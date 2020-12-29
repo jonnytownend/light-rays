@@ -1,9 +1,13 @@
 import React from 'react';
+import { Canvas } from './ui/components/canvas/canvas.component'
+
+function setupCanvas(ctx: CanvasRenderingContext2D, width: number, height: number) {
+}
 
 function App() {
   return (
     <div>
-      App
+        <Canvas setupCanvas={setupCanvas} width={window.innerWidth} height={window.innerHeight} />
     </div>
   );
 }
