@@ -7,9 +7,12 @@ class Vector2 {
         this.y = y
     }
 
+    lenSq() {
+        return (this.x * this.x) + (this.y * this.y)
+    }
+
     len() {
-        const sqr = (this.x * this.x) + (this.y * this.y)
-        return Math.sqrt( sqr )
+        return Math.sqrt( this.lenSq() )
     }
 
     add( vector: Vector2 ) {
@@ -34,10 +37,10 @@ class Vector2 {
     }
 
     scale( scale: number ) {
-        const x = this.x * scale / this.len()
-        const y = this.y * scale / this.len()
-        this.x = x
-        this.y = y
+        const len = this.len()
+        this.x *= scale / len
+        this.y *= scale / len
+
     }
 
     rotate( angle: number ) {
@@ -51,14 +54,14 @@ class Vector2 {
         return this.x * vector.x + this.y * vector.y
     }
 
-    angleBetween( vector: Vector2 ) {
+    angleBetween( vector: Vector2 ): number {
         const dot = this.dot( vector )
         const multiply = this.len() * vector.len()
         if (multiply == 0) {
-            return false
+            return 0
         }
         else {
-            const costheta = dot / mult
+            const costheta = dot / multiply
             return Math.acos( costheta )
         }
     }

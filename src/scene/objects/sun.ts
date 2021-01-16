@@ -1,8 +1,6 @@
-import Vector2 from "../utils/vector2";
+import Object from "./object";
 
-class Sun extends Vector2 {
-    velocity: Vector2
-    acceleration: Vector2
+class Sun extends Object {
     maxSpeed: number
     dragged: boolean
     free: boolean
@@ -13,8 +11,6 @@ class Sun extends Vector2 {
 
     constructor(x: number, y: number) {
         super(x, y)
-        this.velocity = new Vector2(0,0)
-        this.acceleration = new Vector2(0,0)
         this.maxSpeed = 7
         this.dragged = false
         this.free = false
@@ -66,29 +62,24 @@ class Sun extends Vector2 {
         //     this.vel.y *= this.speedDown();
         // }
 
-        // TODO: - Handle non-global canvas
-        // if (this.x > canvas.width) {
-        //     this.vel.x *= -1;
-        //     this.x = canvas.width;
-        // }
-        // else if (this.x < 0) {
-        //     this.vel.x *= -1;
-        //     this.x = 0;
-        // }
-        // if (this.y > canvas.height) {
-        //     this.vel.y *= -1;
-        //     this.y = canvas.height;
-        // }
-        // else if (this.y < 0) {
-        //     this.vel.y *= -1;
-        //     this.y = 0;
-        // }
-    }
-
-    draw() {
-        // TODO: - Handle non-global canvas
-        // ctx.strokeStyle = "red";
-        // ctx.arc(this.x, this.y, this.size, 0, 2*Math.PI, false);
-        // ctx.stroke();
+        if (!this.parent) {
+            return
+        }
+        if (this.x > this.parent.renderer.width) {
+            this.velocity.x *= -1;
+            this.x = this.parent.renderer.width;
+        } else if (this.x < 0) {
+            this.velocity.x *= -1;
+            this.x = 0;
+        }
+        if (this.y > this.parent.renderer.height) {
+            this.velocity.y *= -1;
+            this.y = this.parent.renderer.height;
+        } else if (this.y < 0) {
+            this.velocity.y *= -1;
+            this.y = 0;
+        }
     }
 }
+
+export default Sun

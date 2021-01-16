@@ -1,20 +1,19 @@
 import React, { FC, useEffect, useState, createRef } from 'react'
 
 interface CanvasProps {
-    setupCanvas: (ctx: CanvasRenderingContext2D, width: number, height: number) => void
+    renderCanvas: (canvas: HTMLCanvasElement, width: number, height: number) => void
     width: number
     height: number
 }
 
-export const Canvas: FC<CanvasProps> = ({ setupCanvas, width, height }) => {
+export const Canvas: FC<CanvasProps> = ({ renderCanvas, width, height }) => {
     const canvasRef = createRef<HTMLCanvasElement>()
 
     useEffect(() => {
-        const context = canvasRef.current?.getContext('2d') as CanvasRenderingContext2D
-        if (!context) {
+        if (!canvasRef.current) {
             return
         }
-        setupCanvas(context, width, height)
+        renderCanvas(canvasRef.current, width, height)
     }, [])
 
     return (
