@@ -1,33 +1,36 @@
-import Object from "../objects/object";
 import Block from "../objects/block";
 import Renderer from "./renderer.interface";
 import Ray from "../objects/ray";
 import Sun from "../objects/sun";
+import Scene from '../scene'
 
 class Canvas2DRenderer implements Renderer {
     ctx: CanvasRenderingContext2D
-    width: number
-    height: number
+    scene: Scene
+    drawWireframe: boolean = false
 
-    constructor(context: CanvasRenderingContext2D, width: number, height: number) {
+    constructor(context: CanvasRenderingContext2D, scene: Scene) {
         this.ctx = context
-        this.width = width
-        this.height = height
+        this.scene = scene
     }
 
     clear() {
         this.ctx.strokeStyle = 'rgb(255,0,0)'
-        this.ctx.fillRect(0, 0, this.width, this.height)
+        this.ctx.fillRect(0, 0, this.scene.width, this.scene.height)
     }
 
-    draw(object: Object) {
-        if (object instanceof Block) {
-            this.drawBlock(object)
-        } else if (object instanceof Ray) {
-            this.drawRay(object)
-        } else if (object instanceof Sun) {
-            this.drawSun(object)
-        }
+    draw() {
+        this.ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+        this.ctx.fillRect(0, 0, this.scene.width, this.scene.height);
+        this.scene.getObjects().forEach(object => {
+            if (object instanceof Ray) {
+                this.drawRay(object)
+            } else if (object instanceof Block && this.drawWireframe) {
+                this.drawBlock(object)
+            } else if (object instanceof Sun && this.drawWireframe) {
+                this.drawSun(object)
+            }
+        })
     }
 
     private drawBlock(block: Block) {

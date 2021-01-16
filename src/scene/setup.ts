@@ -3,8 +3,10 @@ import Canvas2DRenderer from './renderer/canvas2d-renderer'
 import startString from "./saved-stated/start";
 import Fps from "./utils/fps";
 import { setupKeyBindings } from "./key-bindings";
+import Renderer from "./renderer/renderer.interface";
 
 let scene: Scene
+let renderer: Renderer
 let fps: Fps
 let ctx: CanvasRenderingContext2D
 
@@ -19,10 +21,10 @@ export function start(canvas: HTMLCanvasElement, width: number, height: number) 
 }
 
 function setup(width: number, height: number) {
-    const renderer = new Canvas2DRenderer(ctx, width, height)
-    scene = new Scene(renderer);
+    scene = new Scene(width, height);
+    renderer = new Canvas2DRenderer(ctx, scene);
     scene.setSamples(4200);
-    scene.secondaryBounces = 2;
+    scene.secondaryBounces = 1;
     scene.shimmer = false;
     scene.loadString(startString)
 
@@ -34,10 +36,8 @@ function setup(width: number, height: number) {
 
 function render() {
     window.requestAnimationFrame(render)
-    ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
-    ctx.fillRect(0, 0, scene.renderer.width, scene.renderer.height);
     scene.update()
-    scene.draw()
+    renderer.draw()
 
     fps.showFps(ctx)
 }

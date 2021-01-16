@@ -18,9 +18,10 @@ class Scene {
     shimmer: boolean
     secondaryBounces: number
     sun: Sun
-    renderer: RendererInterface
+    width: number
+    height: number
 
-    constructor(renderer: RendererInterface) {
+    constructor(width: number, height: number) {
         this.blocks = []
         this.rays = []
         this.diffuseRays = []
@@ -30,11 +31,13 @@ class Scene {
         this.reflectiveSplit = 0.8
         this.resolveBlocks = true
         this.visibleBlocks = false
-        this.shimmer = true
+        this.shimmer = false
         this.secondaryBounces = 1
-        this.sun = new Sun(renderer.width/2, renderer.height/2)
+        this.width = width
+        this.height = height
+        this.sun = new Sun(width/2, height/2)
         this.sun.parent = this
-        this.renderer = renderer
+    
     }
 
     setSamples(samples: number) {
@@ -58,7 +61,7 @@ class Scene {
         for (let i=0; i<this.samples; i++) {
             const ray = new Ray();
             this.addRay(ray)
-            ray.setRaySize(this.renderer.width*2)
+            ray.setRaySize(this.width*2)
             ray.origin = this.sun;
             ray.color = this.sun.color;
             if (this.shimmer) {
@@ -74,7 +77,7 @@ class Scene {
         this.reflectedRays = [];
         for (let i=0; i<this.rays.length; i++) {
             this.rays[i].color = this.sun.color;
-            this.rays[i].vector.scale(this.renderer.width * 2);
+            this.rays[i].vector.scale(this.width * 2);
             if (this.shimmer)
                 this.rays[i].vector.rotate(random(0, 2*Math.PI));
         }
@@ -85,7 +88,7 @@ class Scene {
         newRay.diffuse = true;
         newRay.origin.set(intersect.x, intersect.y);
         newRay.vector.rotate(random(0,2*Math.PI));
-        newRay.vector.scale(this.renderer.width * 0.5);
+        newRay.vector.scale(this.width * 0.5);
         this.diffuseRays.push(newRay);
     }
 
@@ -104,7 +107,7 @@ class Scene {
 
         newRay.origin = newRay.origin.subtract(norm);
         newRay.vector.rotate(angle);
-        newRay.vector.scale(this.renderer.width*2);
+        newRay.vector.scale(this.width*2);
         this.reflectedRays.push(newRay);
     }
 
@@ -138,6 +141,10 @@ class Scene {
         return this.rays.length+this.reflectedRays.length+this.diffuseRays.length;
     }
 
+    getObjects() {
+        return [...this.rays, ...this.reflectedRays, ...this.diffuseRays, ...this.blocks, this.sun]
+    }
+
     sortBlocks(sun: Sun) {
         this.blocks.sort(function(blockA, blockB) {
             const a = blockA.center().subtract(sun);
@@ -168,24 +175,27 @@ class Scene {
         }
     }
 
+    // draw() {
+    //     this.renderer.clear()
+    //     for (let i=0; i<this.rays.length; i++) {
+    //         this.renderer.draw(this.rays[i])
+    //     }
+    //     for (let i=0; i<this.diffuseRays.length; i++) {
+    //         this.renderer.draw(this.diffuseRays[i])
+    //     }
+    //     for (let i=0; i<this.reflectedRays.length; i++) {
+    //         this.renderer.draw(this.reflectedRays[i])
+    //     }
+    //     if (this.visibleBlocks) {
+    //         for (let i=0; i<this.blocks.length; i++) {
+    //             this.renderer.draw(this.blocks[i])
+    //         }
+    //     }
+    //     if (this.sun.doDraw)
+    //         this.renderer.draw(this.sun)
+    // }
     draw() {
-        this.renderer.clear()
-        for (let i=0; i<this.rays.length; i++) {
-            this.renderer.draw(this.rays[i])
-        }
-        for (let i=0; i<this.diffuseRays.length; i++) {
-            this.renderer.draw(this.diffuseRays[i])
-        }
-        for (let i=0; i<this.reflectedRays.length; i++) {
-            this.renderer.draw(this.reflectedRays[i])
-        }
-        if (this.visibleBlocks) {
-            for (let i=0; i<this.blocks.length; i++) {
-                this.renderer.draw(this.blocks[i])
-            }
-        }
-        if (this.sun.doDraw)
-            this.renderer.draw(this.sun)
+        
     }
 
     save() {

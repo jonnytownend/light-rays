@@ -65,16 +65,16 @@ class Sun extends Object {
         if (!this.parent) {
             return
         }
-        if (this.x > this.parent.renderer.width) {
+        if (this.x > this.parent.width) {
             this.velocity.x *= -1;
-            this.x = this.parent.renderer.width;
+            this.x = this.parent.width;
         } else if (this.x < 0) {
             this.velocity.x *= -1;
             this.x = 0;
         }
-        if (this.y > this.parent.renderer.height) {
+        if (this.y > this.parent.height) {
             this.velocity.y *= -1;
-            this.y = this.parent.renderer.height;
+            this.y = this.parent.height;
         } else if (this.y < 0) {
             this.velocity.y *= -1;
             this.y = 0;
