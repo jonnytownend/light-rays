@@ -1,43 +1,36 @@
 import Sun from "./objects/sun";
 import Block from "./objects/block";
 import Ray from "./objects/ray";
-import RendererInterface from "./renderer/renderer.interface";
 import { random, checkLineIntersection } from './utils/helpers'
 import Vector2 from "./utils/vector2";
+import { Input } from './utils/input'
 
 class Scene {
-    blocks: Block[]
-    rays: Ray[]
-    diffuseRays: Ray[]
-    reflectedRays: Ray[]
-    samples: number
+    blocks: Block[] = []
+    rays: Ray[] = []
+    diffuseRays: Ray[] = []
+    reflectedRays: Ray[] = []
+    samples: number = 4500
+    reflectiveSplit: number = 0.8
+    resolveBlocks: boolean = true
+    visibleBlocks: boolean = false
+    shimmer: boolean = false
+    secondaryBounces: number = 1
+    input?: Input
+    newBlock: Block | null = null
+    isAddingNewBlock: boolean = false
+
     maxSamples: number
-    reflectiveSplit: number
-    resolveBlocks: boolean
-    visibleBlocks: boolean
-    shimmer: boolean
-    secondaryBounces: number
     sun: Sun
     width: number
     height: number
 
     constructor(width: number, height: number) {
-        this.blocks = []
-        this.rays = []
-        this.diffuseRays = []
-        this.reflectedRays = []
-        this.samples = 4500
-        this.maxSamples = 1.5*this.samples
-        this.reflectiveSplit = 0.8
-        this.resolveBlocks = true
-        this.visibleBlocks = false
-        this.shimmer = false
-        this.secondaryBounces = 1
         this.width = width
         this.height = height
+        this.maxSamples = 1.5*this.samples
         this.sun = new Sun(width/2, height/2)
         this.sun.parent = this
-    
     }
 
     setSamples(samples: number) {
@@ -76,10 +69,10 @@ class Scene {
         this.diffuseRays = [];
         this.reflectedRays = [];
         for (let i=0; i<this.rays.length; i++) {
-            this.rays[i].color = this.sun.color;
             this.rays[i].vector.scale(this.width * 2);
-            if (this.shimmer)
+            if (this.shimmer) {
                 this.rays[i].vector.rotate(random(0, 2*Math.PI));
+            }
         }
     }
 
@@ -112,14 +105,12 @@ class Scene {
     }
 
     calculateBounces(rays: Ray[], isFirstPass: boolean = true) {
-        for (let i=0; i<rays.length; i++) {
-            const ray = rays[i];
-            for (let j=0; j<this.blocks.length; j++) {
-                const block = this.blocks[j];
+        rays.forEach(ray => {
+            this.blocks.forEach(block => {
                 const rand = Math.random();
                 const intersect = checkLineIntersection(ray, block);
                 if (!intersect) {
-                    continue
+                    return
                 }
                 ray.vector = intersect.subtract(ray.origin);
                 if (rand > this.reflectiveSplit && this.getTotalRays() < this.maxSamples) {
@@ -133,8 +124,8 @@ class Scene {
                 if (isFirstPass) {
                     ray.vector = intersect.subtract(ray.origin);
                 }
-            }
-        }
+            })
+        })
     }
 
     getTotalRays() {
@@ -145,28 +136,50 @@ class Scene {
         return [...this.rays, ...this.reflectedRays, ...this.diffuseRays, ...this.blocks, this.sun]
     }
 
-    sortBlocks(sun: Sun) {
-        this.blocks.sort(function(blockA, blockB) {
-            const a = blockA.center().subtract(sun);
-            const b = blockB.center().subtract(sun);
+    sortBlocks() {
+        this.blocks.sort((blockA, blockB) => {
+            const a = blockA.center().subtract(this.sun);
+            const b = blockB.center().subtract(this.sun);
             return a.lenSq() - b.lenSq();
         });
     }
 
-    sortBlocks2(ray: Ray) {
-        this.blocks.sort(function(blockA, blockB) {
-            const a = blockA.center().subtract(ray.origin);
-            const b = blockB.center().subtract(ray.origin);
-            return a.lenSq() - b.lenSq();
-        });
+    handleInput() {
+        if (!this.input) { return }
+
+        this.sun.handleInput()
+        if (this.sun.dragged || !this.input.isMouseDown) {
+            this.isAddingNewBlock = false
+            if (this.newBlock !== null) {
+                this.newBlock = null
+            }
+            return
+        }
+
+        const mouse = this.input.mouse
+        if (!this.isAddingNewBlock) {
+            this.newBlock = new Block()
+            this.newBlock.origin.set(mouse.x, mouse.y)
+            this.isAddingNewBlock = true
+            this.addBlock(this.newBlock)
+        } else if (this.newBlock) {
+            if (this.newBlock.flipped) {
+                // Flip it back whilst drawing
+                this.newBlock.flip()
+            }
+            this.newBlock.vector.set(
+                mouse.x - this.newBlock.origin.x,
+                mouse.y - this.newBlock.origin.y,
+            )
+        }
     }
 
     update() {
-        this.sun.getInput();
+        this.handleInput()
         this.sun.update();
 
         //Ensure blocks are in right order
-        this.sortBlocks(this.sun);
+        this.sortBlocks();
 
         this.recastRays();
         this.calculateBounces(this.rays);
@@ -175,27 +188,20 @@ class Scene {
         }
     }
 
-    // draw() {
-    //     this.renderer.clear()
-    //     for (let i=0; i<this.rays.length; i++) {
-    //         this.renderer.draw(this.rays[i])
-    //     }
-    //     for (let i=0; i<this.diffuseRays.length; i++) {
-    //         this.renderer.draw(this.diffuseRays[i])
-    //     }
-    //     for (let i=0; i<this.reflectedRays.length; i++) {
-    //         this.renderer.draw(this.reflectedRays[i])
-    //     }
-    //     if (this.visibleBlocks) {
-    //         for (let i=0; i<this.blocks.length; i++) {
-    //             this.renderer.draw(this.blocks[i])
-    //         }
-    //     }
-    //     if (this.sun.doDraw)
-    //         this.renderer.draw(this.sun)
-    // }
-    draw() {
-        
+    start() {
+        // Setup key bindings
+        this.input?.observeKeyPress((e: any) => {
+            if (e.keyCode === 117) { //u
+                this.blocks.sort((blockA, blockB) => {
+                    return blockA.index - blockB.index;
+                })
+                this.blocks.pop()
+            } else if (e.keyCode === 99) {
+                this.blocks = []
+            }
+        })
+
+        this.castRays()
     }
 
     save() {
@@ -240,6 +246,8 @@ class Scene {
             newBlock.vector.y = parseInt(vals[3]);
             this.blocks.push(newBlock);
         }
+
+        // Center all blocks
     }
 }
 

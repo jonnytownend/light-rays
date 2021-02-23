@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState, createRef } from 'react'
+import './canvas.styles.scss'
 
 interface CanvasProps {
     renderCanvas: (canvas: HTMLCanvasElement, width: number, height: number) => void

@@ -6,23 +6,18 @@ import Scene from '../scene'
 
 class Canvas2DRenderer implements Renderer {
     ctx: CanvasRenderingContext2D
-    scene: Scene
+    // scene: Scene
     drawWireframe: boolean = false
 
-    constructor(context: CanvasRenderingContext2D, scene: Scene) {
+    constructor(context: CanvasRenderingContext2D) {
         this.ctx = context
-        this.scene = scene
+        // this.scene = scene
     }
 
-    clear() {
-        this.ctx.strokeStyle = 'rgb(255,0,0)'
-        this.ctx.fillRect(0, 0, this.scene.width, this.scene.height)
-    }
-
-    draw() {
+    draw(scene: Scene) {
         this.ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
-        this.ctx.fillRect(0, 0, this.scene.width, this.scene.height);
-        this.scene.getObjects().forEach(object => {
+        this.ctx.fillRect(0, 0, scene.width, scene.height);
+        scene.getObjects().forEach(object => {
             if (object instanceof Ray) {
                 this.drawRay(object)
             } else if (object instanceof Block && this.drawWireframe) {

@@ -1,8 +1,7 @@
-import Object from "../objects/object";
+import Scene from "../scene";
 
 interface Renderer {
-    clear: () => void
-    draw: () => void
+    draw: (scene: Scene) => void
 }
 
 export default Renderer

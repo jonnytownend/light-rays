@@ -13,10 +13,10 @@ class Sun extends Object {
         super(x, y)
         this.maxSpeed = 7
         this.dragged = false
-        this.free = false
+        this.free = true
         this.doDraw = false
-        this.directControl = false
-        this.size = 20
+        this.directControl = true
+        this.size = 60
         this.color = [255,255,255]
     }
 
@@ -31,36 +31,59 @@ class Sun extends Object {
             return 0.9
     }
 
-    getInput() {
-        // TODO: - Handle user input that isn't global
-        // if (this.directControl) {
-        //     this.x += inpt.x * this.maxSpeed;
-        //     this.y += inpt.y * this.maxSpeed;
-        //     return;
-        // }
-        //
-        // this.acc.set(0,0);
-        // this.acc.x = inpt.x*this.speedUp();
-        // this.acc.y = inpt.y*this.speedUp();
+    handleInput() {
+        const input = this.parent?.input
+        if (!input) { return }
+
+        if (this.directControl && (input.vertical !== 0 || input.horizontal !== 0)) {
+            this.acceleration.set(0, 0)
+            this.velocity.set(0, 0)
+            this.x += input.horizontal * this.maxSpeed;
+            this.y += input.vertical * this.maxSpeed;
+        } else {
+            this.acceleration.set(0,0);
+            this.acceleration.x = input.horizontal * this.speedUp();
+            this.acceleration.y = input.vertical * this.speedUp();
+        }
+
+        // Dragging
+        if (!input.isMouseDown) {
+            this.dragged = false
+            return
+        }
+
+        if (
+            input.isMouseDown &&
+            !this.dragged &&
+            input.mouse.x < this.x + this.size &&
+            input.mouse.x > this.x - this.size &&
+            input.mouse.y < this.y + this.size &&
+            input.mouse.y > this.y - this.size
+        ) {
+            this.dragged = true
+        }
+
+        if (this.dragged) {
+            this.set(input.mouse.x, input.mouse.y)
+            this.velocity.set(
+                (input.mouse.x - input.prevMouse.x),
+                (input.mouse.y - input.prevMouse.y),
+            )
+        }
     }
 
     update() {
         this.velocity.x += this.acceleration.x
         this.velocity.y += this.acceleration.y
 
-        if (!this.free && this.velocity.len() > this.maxSpeed)
-            this.velocity.scale(this.maxSpeed)
-        else if (this.free && this.velocity.len() > this.maxSpeed * 10)
-            this.velocity.scale(this.maxSpeed * 5)
-
         this.x += this.velocity.x
         this.y += this.velocity.y
 
-        // TODO: - Handle user input that isn't global
-        // if (inpt.x==0 && inpt.y==0) {
-        //     this.vel.x *= this.speedDown();
-        //     this.vel.y *= this.speedDown();
-        // }
+        const input = this.parent?.input
+        if (input && input.vertical === 0 && input.horizontal === 0) {
+            this.velocity.x *= this.speedDown()
+            this.velocity.y *= this.speedDown()
+        }
 
         if (!this.parent) {
             return

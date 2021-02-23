@@ -26,11 +26,11 @@ export function checkLineIntersection(ray: Ray, block: Block) {
     let onLine2 = false;
 
     denominator = ((line2EndY - line2StartY) * (line1EndX - line1StartX)) - ((line2EndX - line2StartX) * (line1EndY - line1StartY));
-    /*
+    
     if (denominator == 0) {
         return false; //The lines are parallel
     }
-    */
+    
     a = line1StartY - line2StartY;
     b = line1StartX - line2StartX;
     numerator1 = ((line2EndX - line2StartX) * a) - ((line2EndY - line2StartY) * b);
