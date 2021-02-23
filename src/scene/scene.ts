@@ -191,13 +191,15 @@ class Scene {
     start() {
         // Setup key bindings
         this.input?.observeKeyPress((e: any) => {
-            if (e.keyCode === 117) { //u
+            if (e.keyCode === 117) { // U
                 this.blocks.sort((blockA, blockB) => {
                     return blockA.index - blockB.index;
                 })
                 this.blocks.pop()
-            } else if (e.keyCode === 99) {
+            } else if (e.keyCode === 99) { // C
                 this.blocks = []
+            } else if (e.keyCode === 115) {
+                console.log(this.save())
             }
         })
 
@@ -248,6 +250,20 @@ class Scene {
         }
 
         // Center all blocks
+        const allX = this.blocks.map(block => block.center().x).filter(block => !!block)
+        const allY = this.blocks.map(block => block.center().y).filter(block => !!block)
+        const averageX = allX.reduce((acc, current) => acc + current, 0) / allX.length
+        const averageY = allY.reduce((acc, current) => acc + current, 0) / allY.length
+
+        const diffX = (this.width / 2) - averageX
+        const diffY = (this.height / 2) - averageY
+
+        this.blocks.forEach(block => {
+            block.origin.set(
+                block.origin.x + diffX,
+                block.origin.y + diffY,
+            )
+        })
     }
 }
 
