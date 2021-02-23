@@ -1,6 +1,10 @@
-# Getting Started with Create React App
+# Light Rays
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A HTML5 Canvas app for creating interactive light ray experiments, written in JavaScript.
+
+![Screenshot](./public/light-rays-screen.png)
+
+See it in action [here]().
 
 ## Available Scripts
 
