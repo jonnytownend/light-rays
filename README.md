@@ -4,7 +4,7 @@ A HTML5 Canvas app for creating interactive light ray experiments, written in Ja
 
 ![Screenshot](./public/light-rays-screen.png)
 
-See it in action [here]().
+See it in action [here](https://jonnytownend.github.io/light-rays/).
 
 ## Available Scripts
 
