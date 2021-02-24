@@ -2,7 +2,7 @@
 
 A HTML5 Canvas app for creating interactive light ray experiments, written in TypeScript.
 
-See it in action [here](https://jonnytownend.github.io/light-rays/).
+See it in action [here](https://lightrays.netlify.app/).
 
 ![Screenshot](./public/light-rays-screen.png)
 
