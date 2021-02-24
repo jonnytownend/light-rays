@@ -12,7 +12,9 @@ const Instructions: React.FC = () => {
         <div className={`container ${isOpen ? 'open' : ''}`}>
             <div className="buttonContainer">
                 <div className="button" onClick={handleButtonPress}>
-                    <p className={isOpen ? "" : "rotated"}>{'<'}</p>
+                    <div className={`buttonContent ${isOpen ? "" : "rotated"}`}>
+                        <p>{'‹'}</p>
+                    </div>
                 </div>
             </div>
             <div className="instructionContainer">
