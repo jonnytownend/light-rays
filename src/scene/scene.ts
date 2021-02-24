@@ -38,18 +38,52 @@ class Scene {
         this.maxSamples = 1.5 * samples
     }
 
-    addBlock(block: Block) {
+    start() {
+        this.setupKeyBindings()
+        this.castRays()
+    }
+
+    update() {
+        this.handleInput()
+        this.sun.update();
+
+        //Ensure blocks are in right order
+        this.sortBlocks();
+
+        this.recastRays();
+        this.calculateBounces(this.rays);
+        for (let i=0; i<this.secondaryBounces; i++) {
+            this.calculateBounces(this.reflectedRays, i === 0);
+        }
+    }
+
+    private setupKeyBindings() {
+        this.input?.observeKeyPress((e: any) => {
+            if (e.keyCode === 117) { // U
+                this.blocks.sort((blockA, blockB) => {
+                    return blockA.index - blockB.index;
+                })
+                this.blocks.pop()
+            } else if (e.keyCode === 99) { // C
+                this.blocks = []
+            } else if (e.keyCode === 115) { // S
+                console.log(this.save())
+            }
+        })
+    }
+
+    private addBlock(block: Block) {
         block.parent = this
         block.index = this.blocks.length
         this.blocks.push(block)
     }
 
-    addRay(ray: Ray) {
+    private addRay(ray: Ray) {
         ray.parent = this
         this.rays.push(ray)
     }
 
-    castRays() {
+    private castRays() {
         const angle = 2*Math.PI/this.samples;
         for (let i=0; i<this.samples; i++) {
             const ray = new Ray();
@@ -65,7 +99,7 @@ class Scene {
         }
     }
 
-    recastRays() {
+    private recastRays() {
         this.diffuseRays = [];
         this.reflectedRays = [];
         for (let i=0; i<this.rays.length; i++) {
@@ -76,7 +110,7 @@ class Scene {
         }
     }
 
-    createNewDiffuseRay(ray: Ray, block: Block, intersect: Vector2) {
+    private createNewDiffuseRay(ray: Ray, block: Block, intersect: Vector2) {
         const newRay = ray.copy();
         newRay.diffuse = true;
         newRay.origin.set(intersect.x, intersect.y);
@@ -85,7 +119,7 @@ class Scene {
         this.diffuseRays.push(newRay);
     }
 
-    createNewReflectedRay(ray: Ray, block: Block, intersect: Vector2) {
+    private createNewReflectedRay(ray: Ray, block: Block, intersect: Vector2) {
         const newRay = ray.copy();
         newRay.origin.set(intersect.x, intersect.y);
 
@@ -104,7 +138,7 @@ class Scene {
         this.reflectedRays.push(newRay);
     }
 
-    calculateBounces(rays: Ray[], isFirstPass: boolean = true) {
+    private calculateBounces(rays: Ray[], isFirstPass: boolean = true) {
         rays.forEach(ray => {
             this.blocks.forEach(block => {
                 const rand = Math.random();
@@ -128,7 +162,7 @@ class Scene {
         })
     }
 
-    getTotalRays() {
+    private getTotalRays() {
         return this.rays.length+this.reflectedRays.length+this.diffuseRays.length;
     }
 
@@ -136,7 +170,7 @@ class Scene {
         return [...this.rays, ...this.reflectedRays, ...this.diffuseRays, ...this.blocks, this.sun]
     }
 
-    sortBlocks() {
+    private sortBlocks() {
         this.blocks.sort((blockA, blockB) => {
             const a = blockA.center().subtract(this.sun);
             const b = blockB.center().subtract(this.sun);
@@ -144,7 +178,7 @@ class Scene {
         });
     }
 
-    handleInput() {
+    private handleInput() {
         if (!this.input) { return }
 
         this.sun.handleInput()
@@ -172,38 +206,6 @@ class Scene {
                 mouse.y - this.newBlock.origin.y,
             )
         }
-    }
-
-    update() {
-        this.handleInput()
-        this.sun.update();
-
-        //Ensure blocks are in right order
-        this.sortBlocks();
-
-        this.recastRays();
-        this.calculateBounces(this.rays);
-        for (let i=0; i<this.secondaryBounces; i++) {
-            this.calculateBounces(this.reflectedRays, i === 0);
-        }
-    }
-
-    start() {
-        // Setup key bindings
-        this.input?.observeKeyPress((e: any) => {
-            if (e.keyCode === 117) { // U
-                this.blocks.sort((blockA, blockB) => {
-                    return blockA.index - blockB.index;
-                })
-                this.blocks.pop()
-            } else if (e.keyCode === 99) { // C
-                this.blocks = []
-            } else if (e.keyCode === 115) {
-                console.log(this.save())
-            }
-        })
-
-        this.castRays()
     }
 
     save() {
