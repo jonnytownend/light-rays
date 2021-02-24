@@ -7,7 +7,7 @@ See it in action [here](https://lightrays.netlify.app/).
 ![Screenshot](./public/light-rays-screen.png)
 
 ## Where do I start?
-If you want to peruse the codebase, start with the `setup()` function defined in `src/scene/setup.ts` (this function is called by the React `Canvas` component and kickstarts the HTML5 canvas render loop).
+If you want to peruse the codebase, check out the `start()` function defined in `src/scene/setup.ts` (this function is called by the React `Canvas` component and kickstarts the HTML5 canvas render loop).
 
 ## Available Scripts
 
