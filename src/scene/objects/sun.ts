@@ -20,11 +20,11 @@ class Sun extends SceneObject {
         this.color = [255,255,255]
     }
 
-    speedUp() {
+    private speedUp() {
         return 3
     }
 
-    speedDown() {
+    private speedDown() {
         if (this.free)
             return 0.99
         else
