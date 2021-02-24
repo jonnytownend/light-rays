@@ -6,12 +6,10 @@ import Scene from '../scene'
 
 class Canvas2DRenderer implements Renderer {
     ctx: CanvasRenderingContext2D
-    // scene: Scene
     drawWireframe: boolean = false
 
     constructor(context: CanvasRenderingContext2D) {
         this.ctx = context
-        // this.scene = scene
     }
 
     draw(scene: Scene) {
