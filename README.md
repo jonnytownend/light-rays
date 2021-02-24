@@ -1,10 +1,10 @@
 # Light Rays
 
-A HTML5 Canvas app for creating interactive light ray experiments, written in JavaScript.
-
-![Screenshot](./public/light-rays-screen.png)
+A HTML5 Canvas app for creating interactive light ray experiments, written in TypeScript.
 
 See it in action [here](https://jonnytownend.github.io/light-rays/).
+
+![Screenshot](./public/light-rays-screen.png)
 
 ## Available Scripts
 
