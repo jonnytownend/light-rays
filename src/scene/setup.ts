@@ -42,5 +42,6 @@ function render() {
     scene.update()
     renderer.draw(scene)
 
+    // TODO: - Show / hide fps on key press
     // fps.showFps(ctx)
 }
