@@ -3,7 +3,6 @@ import Canvas2DRenderer from './renderer/canvas2d-renderer'
 import startString from "./saved-stated/start";
 import Fps from "./utils/fps";
 import { Input } from './utils/input'
-// import { setupKeyBindings } from "./key-bindings";
 import Renderer from "./renderer/renderer.interface";
 
 let scene: Scene
@@ -24,16 +23,18 @@ export function start(_canvas: HTMLCanvasElement, width: number, height: number)
 }
 
 function setup(width: number, height: number) {
-    scene = new Scene(width, height);
+    scene = new Scene(width, height)
     scene.input = new Input(canvas)
-    scene.setSamples(4000);
+    scene.setSamples(3300);
     scene.loadString(startString)
-    scene.sun.velocity.set(3,-1)
 
-    renderer = new Canvas2DRenderer(ctx);
-    fps = new Fps(30);
+    scene.sun.set(width / 3, height / 2.2)
+    scene.sun.velocity.set(5, 0)
 
-    scene.start();
+    renderer = new Canvas2DRenderer(ctx)
+    fps = new Fps(30)
+
+    scene.start()
 }
 
 function render() {
