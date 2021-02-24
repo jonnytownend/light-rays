@@ -1,8 +1,8 @@
-import Object from "./object";
+import SceneObject from "./sceneObject";
 import Ray from "./ray";
 import Vector2 from "../utils/vector2";
 
-class Block extends Object {
+class Block extends SceneObject {
     vector: Vector2
     flipped: boolean
     index: number

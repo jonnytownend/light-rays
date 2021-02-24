@@ -1,6 +1,6 @@
-import Object from "./object";
+import SceneObject from "./sceneObject";
 
-class Sun extends Object {
+class Sun extends SceneObject {
     maxSpeed: number
     dragged: boolean
     free: boolean

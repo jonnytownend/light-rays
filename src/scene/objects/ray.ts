@@ -1,7 +1,7 @@
-import Object from "./object";
+import SceneObject from "./sceneObject";
 import Vector2 from "../utils/vector2";
 
-class Ray extends Object {
+class Ray extends SceneObject {
     vector: Vector2
     color: number[]
     diffuse: boolean
